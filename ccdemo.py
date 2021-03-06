@@ -6,8 +6,12 @@ app = flask.Flask(__name__)
 
 app.config["DEBUG"] = True
 
-@app.route('/index')
+@app.route('/')
 def index():
+   return render_template('index.html')
+
+@app.route('/index')
+def index1():
    return render_template('index.html')
 
 @app.route('/vms')
