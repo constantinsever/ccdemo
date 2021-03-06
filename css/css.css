@@ -1,0 +1,55 @@
+td { 
+    padding: 5px;
+	border-spacing: 5px;
+	word-break: keep-all
+}
+
+
+
+
+.arial_normal_white {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: small;
+	color: #FFFFFF;
+}
+
+.arial_normal_black {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: small;
+	color: #000000;
+}
+
+.arial_normal_gray {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: small;
+	color: #666666;
+}
+
+.arial_bold_white {
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight:bold;
+	font-size:small;
+	color: #FFFFFF;
+}
+
+.arial_bold_black {
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight:bold;
+	font-size:small;
+	color: #000000;
+}
+
+.arial_bold_gray {
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight:bold;
+	font-size:small;
+	color: #666666;
+}
+
+A:link {font-family: Arial, Helvetica, sans-serif; font-weight:bold; font-size:small; color:#006699;text-decoration: none;}
+A:visited  {font-family: Arial, Helvetica, sans-serif; font-weight:bold; font-size:small; color:#006699;text-decoration: none;}
+A:active {font-family: Arial, Helvetica, sans-serif; font-weight:bold; font-size:small; color:#006699;text-decoration: none;}
+A:hover { color:#FF0000; font-family: Arial, Helvetica, sans-serif; font-weight:bold; font-size:small;}
+
+
+.style2 {font-weight: bold; font-size: x-large; font-family: Arial, Helvetica, sans-serif;}
