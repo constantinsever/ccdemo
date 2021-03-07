@@ -1,6 +1,8 @@
 import flask
 from flask import request, jsonify, render_template
 import boto3
+from subprocess import call
+
 
 app = flask.Flask(__name__)
 
@@ -16,7 +18,13 @@ def index1():
 
 @app.route('/vms')
 def vms():
-   return render_template('vms.html')
+  client = boto3.client('ec2')
+  responses = client.stop_instances(
+    InstanceIds=['i-0eb400ec9e5f08aea'],
+    DryRun=False #!!!
+   )
+  return jsonify(responses)
+#  return render_template('vms.html')
 
 @app.route('/users')
 def users():
@@ -24,10 +32,12 @@ def users():
 
 @app.route('/inventory')
 def inventory():
-   return render_template('inventory.html')
+    call(["ansible-playbook", "ansible/ccdemo.yml"])
+    return "done"
+#   return render_template('inventory.html')
 
 
 
 
 
-app.run(host='0.0.0.0', port=80)
+app.run(host='0.0.0.0', port=5000)
