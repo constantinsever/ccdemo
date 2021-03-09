@@ -7,6 +7,62 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+
+<script>
+$(document).ready(function(){
+  $("#show_inventory_templates").click(function(){
+   $.ajax({url: "/show_inventory/inventory_templates", success: function(result){
+      $("#inventory_listing").html(result);
+    }});
+  });
+
+ $("#show_inventory_iso").click(function(){
+   $.ajax({url: "/show_inventory/inventory_iso", success: function(result){
+      $("#inventory_listing").html(result);
+    }});
+  });
+
+ $("#show_inventory_apps").click(function(){
+   $.ajax({url: "/show_inventory/inventory_apps", success: function(result){
+      $("#inventory_listing").html(result);
+    }});
+  });
+
+ $("#show_inventory_ansible").click(function(){
+   $.ajax({url: "/show_inventory/inventory_ansible", success: function(result){
+      $("#inventory_listing").html(result);
+    }});
+  });
+
+ $("#show_inventory_tf").click(function(){
+   $.ajax({url: "/show_inventory/inventory_tf", success: function(result){
+      $("#inventory_listing").html(result);
+    }});
+  });
+
+ $("#show_inventory_startup").click(function(){
+   $.ajax({url: "/show_inventory/inventory_startup", success: function(result){
+      $("#inventory_listing").html(result);
+    }});
+  });
+
+ $("#show_inventory_docker").click(function(){
+   $.ajax({url: "/show_inventory/inventory_docker", success: function(result){
+      $("#inventory_listing").html(result);
+    }});
+  });
+
+
+
+
+
+});
+
+
+</script>
+
+
 </head>
 <body>
 
@@ -26,14 +82,22 @@
   
 <div class="container">
 <ul class="nav nav-tabs">
-  <li class="active"><a href="#">ISO</a></li>
-  <li><a href="#">Templates</a></li>
-  <li><a href="#">Applications</a></li>
-  <li><a href="#">Ansible</a></li>
-  <li><a href="#">Terraform</a></li>
+  <li id="show_inventory_templates"><a href="#">VM templates</a></li>
+  <li id="show_inventory_iso"><a href="#">ISO</a></li>
+  <li id="show_inventory_apps"><a href="#">Applications</a></li>
+  <li id="show_inventory_ansible"><a href="#">Ansible Playbooks</a></li>
+  <li id="show_inventory_tf"><a href="#">Terraform</a></li>
+  <li id="show_inventory_startup"><a href="#">Startup</a></li>
+  <li id="show_inventory_docker"><a href="#">Docker images</a></li>
+	
 </ul>
 </div>
-
+  <div class="container" id="inventory_listing">  
+	  Please select inventory.
+  </div>
 </body>
 </html>
 </html>
+
+
+
