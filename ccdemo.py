@@ -1,6 +1,7 @@
 import flask
 from flask import request, jsonify, render_template
 import boto3
+from botocore.exceptions import ClientError
 from subprocess import call
 from flaskext.mysql import MySQL
 
@@ -30,15 +31,50 @@ def index():
 def index1():
    return render_template('index.html')
 
+#/change_instance_state?instanceID=i-0eb400ec9e5f08aea&newState=Reboot
+@app.route('/change_instance_state',methods=['POST'])
+def change_instance_state():
+    result = "State change has been successfull"
+
+    newState=request.form.get('newState')
+    instance_id=request.form.get('instanceID')
+   
+    ec2 = boto3.client('ec2')
+
+    if ( newState == 'Start'):
+        try:
+          response = ec2.start_instances(InstanceIds=[instance_id], DryRun=False)
+        except ClientError as e:
+          print(e)
+          result = "State change exception, could not change state."
+          
+    elif ( newState == 'Stop'):
+        try:
+          response = ec2.stop_instances(InstanceIds=[instance_id], DryRun=False)
+        except ClientError as e:
+          print(e)
+          result = "State change exception, could not change state."
+
+
+    elif ( newState == 'Reboot'):
+        try:
+          response = ec2.reboot_instances(InstanceIds=[instance_id], DryRun=False)
+        except ClientError as e:
+          print(e)
+          result = "State change exception, could not change state."
+
+    
+    return result
+
 @app.route('/vms')
 def vms():
-#  client = boto3.client('ec2')
-#  responses = client.stop_instances(
-#    InstanceIds=['i-0eb400ec9e5f08aea'],
-#    DryRun=False #!!!
-#   )
-#  return jsonify(responses)
-  return render_template('vms.html')
+   ec2 = boto3.resource('ec2', region_name='eu-west-1')
+
+   filters = [{ 'Name': 'instance-state-name', 'Values': ['running','stopped','pending', 'shutting-down','terminated','stopping']}]
+   instances=ec2.instances.filter(Filters=filters)
+
+   return render_template('vms.html', instances=instances);
+
 
 @app.route('/users')
 def users():
@@ -63,6 +99,7 @@ def show_inventory(inventory_type):
         res = cursor.fetchall()
 
         header = '''
+        <p><button type="button" class="btn btn-success">Create new template...</button></p>
         <table class="table table-hover table-bordered">
         <thead>
          <tr>
@@ -96,6 +133,7 @@ def show_inventory(inventory_type):
         res = cursor.fetchall()
 
         header = '''
+        <p><button type="button" class="btn btn-success">Add new ISO...</button></p>
         <table class="table table-hover table-bordered">
         <thead>
          <tr>
@@ -125,6 +163,7 @@ def show_inventory(inventory_type):
         res = cursor.fetchall()
 
         header = '''
+        <p><button type="button" class="btn btn-success">Add new application...</button></p>
         <table class="table table-hover table-bordered">
         <thead>
          <tr>
@@ -156,6 +195,7 @@ def show_inventory(inventory_type):
         res = cursor.fetchall()
 
         header = '''
+        <p><button type="button" class="btn btn-success">Add new Ansible Playbook ...</button></p>        
         <table class="table table-hover table-bordered">
         <thead>
          <tr>
@@ -185,6 +225,7 @@ def show_inventory(inventory_type):
         res = cursor.fetchall()
 
         header = '''
+        <p><button type="button" class="btn btn-success">Add new Terraform script...</button></p>        
         <table class="table table-hover table-bordered">
         <thead>
          <tr>
@@ -208,6 +249,66 @@ def show_inventory(inventory_type):
 
         result = header + rows + '</tbody></table>'
 
+    if (inventory_type == "inventory_startup"):
+        sql_query = "select * from inventory_startup"
+        cursor.execute(sql_query)
+
+        res = cursor.fetchall()
+
+        header = '''
+        <p><button type="button" class="btn btn-success">Add new Startup script ...</button></p>
+        <table class="table table-hover table-bordered">
+        <thead>
+         <tr>
+          <th align="center" nowrap="nowrap">Script name</th>
+          <th align="center" nowrap="nowrap">Description</th>
+          <th align="center" nowrap="nowrap">Script command</th>
+        </tr>
+       </thead>
+       <tbody>'''
+
+        rows = ""
+
+        for record in res:
+         rows = rows + ''' <tr>
+          <td nowrap="nowrap">{}</td>
+          <td nowrap="nowrap">{}</td>
+          <td nowrap="nowrap">{}</td>
+         </tr>'''.format(record[0], record[1], record[2])
+
+        result = header + rows + '</tbody></table>'
+
+
+
+
+
+
+    if (inventory_type == "inventory_docker"):
+        sql_query = "select * from inventory_docker"
+        cursor.execute(sql_query)
+
+        res = cursor.fetchall()
+
+        header = '''
+        <p><button type="button" class="btn btn-success">Add new Docker image ...</button></p>        
+        <table class="table table-hover table-bordered">
+        <thead>
+         <tr>
+          <th align="center" nowrap="nowrap">Image name</th>
+          <th align="center" nowrap="nowrap">Description</th>
+        </tr>
+       </thead>
+       <tbody>'''
+
+        rows = ""
+
+        for record in res:
+         rows = rows + ''' <tr>
+          <td nowrap="nowrap">{}</td>
+          <td nowrap="nowrap">{}</td>
+         </tr>'''.format(record[0], record[1])
+
+        result = header + rows + '</tbody></table>'
 
 
 

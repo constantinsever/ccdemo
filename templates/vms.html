@@ -7,6 +7,25 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+<script>
+
+  function changeState(instanceID,newState){
+    
+    if (confirm ("Are you sure you want to " + newState + " instance " + instanceID + " ? ") != true)
+     return;
+
+ $.post(
+	 "/change_instance_state",
+              { newState: newState,
+	       instanceID: instanceID }
+           ).done(function (reply) {
+              alert(reply);
+           });
+  };
+</script>	
+ 	 
+
 </head>
 <body>
 
@@ -29,73 +48,42 @@
   <table class="table table-hover table-bordered">
     <thead>
       <tr>
-        <th nowrap="nowrap">Machine Name</th>
-        <th align="center" nowrap="nowrap">Instance type</th>
-        <th align="center" nowrap="nowrap">State</th>
-        <th align="center" nowrap="nowrap">AMI</th>
-        <th align="center" nowrap="nowrap">IPv4 address</th>
+        <th nowrap="nowrap">Instance Name</th>
+        <th align="center" nowrap="nowrap">Instance ID</th>
+        <th align="center" nowrap="nowrap">Instance type</th> 
+        <th align="center" nowrap="nowrap">Current state</th>
+	<th align="center" nowrap="nowrap">Change state</th>
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td nowrap="nowrap" >RHEL 8 test VM</td>
-        <td nowrap="nowrap" >Red Hat Enterprise Linux 8</td>
-        <td nowrap="nowrap">
-		   <div class="dropdown">
-    		<button class="btn  dropdown-toggle" type="button" data-toggle="dropdown">Stopped
-    		<span class="caret"></span></button>
-    			<ul class="dropdown-menu">
-					<li><a href="#">Start</a></li>
-					<li class="disabled"><a href="#">Stop</a></li>
-					<li><a href="#">Reboot</a></li>
-					<li><a href="#">Hibernate</a></li>
-					<li><a href="#">Terminate</a></li>
-				</ul>
-  		  </div>
-		  </td>
-        <td nowrap="nowrap">ami-032e5b6af8a711f30 (64-bit x86)</td>
-        <td nowrap="nowrap">10.34.26.12</td>
-      </tr>
-      <tr>
-        <td nowrap="nowrap" >Ubuntu Server test VM</td>
-        <td nowrap="nowrap" >Ubuntu Server 20.04 LTS</td>
-        <td nowrap="nowrap">
-          <div class="dropdown">
-    		<button class="btn  dropdown-toggle" type="button" data-toggle="dropdown">Stopped
-    		<span class="caret"></span></button>
-    			<ul class="dropdown-menu">
-					<li><a href="#">Start</a></li>
-					<li class="disabled"><a href="#">Stop</a></li>
-					<li><a href="#">Reboot</a></li>
-					<li><a href="#">Hibernate</a></li>
-					<li><a href="#">Terminate</a></li>
-				</ul>
-  		  </div>
+	 {% for instance in instances: %}
+	 <tr> 
+            {% for tag in instance.tags: %}
+            {%  if 'Name'in tag['Key']: %}
+	     <td>{{tag['Value']}}</td>
+	    {% else %}
+	     <td>Unknown instance</td>
+	    {%  endif %}
+            {% endfor %}  
+          <td>{{instance.id}}</td>
+          <td>{{instance.instance_type}}</td>
+          <td>{{instance.state['Name']}}</td>
+	  <td nowrap="nowrap">
+	   <div class="dropdown">
+	   <button class="btn  dropdown-toggle" type="button" data-toggle="dropdown">Select new state...
+    	    <span class="caret"></span></button>
+    	    <ul class="dropdown-menu">
+ 	        <li onClick=changeState("{{instance.id}}","Start")><a href="#">Start</a></li>
+	        <li onClick=changeState("{{instance.id}}","Stop")><a href="#">Stop</a></li>
+		<li onClick=changeState("{{instance.id}}","Reboot")><a href="#">Reboot</a></li>
+	    </ul>
+  	   </div>
+	   </td>
 
-		</td>
-        <td nowrap="nowrap"> ami-08bac620dc84221eb (64-bit x86)</td>
-        <td nowrap="nowrap">10.34.26.13</td>
-      </tr>
-      <tr>
-        <td nowrap="nowrap" >Windows 2016 Server test VM</td>
-        <td nowrap="nowrap" >Microsoft Windows Server 2016 Base</td>
-        <td nowrap="nowrap">
-   	     <div class="dropdown">
-    		<button class="btn  dropdown-toggle" type="button" data-toggle="dropdown">Stopped
-    		<span class="caret"></span></button>
-    			<ul class="dropdown-menu">
-					<li><a href="#">Start</a></li>
-					<li class="disabled"><a href="#">Stop</a></li>
-					<li><a href="#">Reboot</a></li>
-					<li><a href="#">Hibernate</a></li>
-					<li><a href="#">Terminate</a></li>
-				</ul>
-  		  </div>
 
-		</td>
-        <td nowrap="nowrap">ami-0debf1d5c6ecf21b8 (64-bit x86)</td>
-        <td nowrap="nowrap">10.34.26.14</td>
-      </tr>
+
+	 <tr>
+	 {% endfor %}      
     </tbody>
   </table>
 </div>
