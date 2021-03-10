@@ -32,7 +32,7 @@
 <nav class="navbar navbar-default">
   <div class="container">
     <div class="navbar-header">
-      <a class="navbar-brand" href="#">Cloud Central demo</a>
+      <a class="navbar-brand" href="#">Cloud Central</a>
     </div>
     <ul class="nav navbar-nav">
       <li ><a href="index">Home</a></li>
@@ -44,7 +44,7 @@
 </nav>
   
 <div class="container">
-  <p><button type="button" class="btn btn-success">Create new VM...</button></p>
+  <p><button type="button" class="btn btn-success" onClick='document.location="/create_vm"'>Create new VM...</button></p>
   <table class="table table-hover table-bordered">
     <thead>
       <tr>
@@ -53,6 +53,8 @@
         <th align="center" nowrap="nowrap">Instance type</th> 
         <th align="center" nowrap="nowrap">Current state</th>
 	<th align="center" nowrap="nowrap">Change state</th>
+	<th align="center" nowrap="nowrap"></th>
+
       </tr>
     </thead>
     <tbody>
@@ -79,7 +81,7 @@
 	    </ul>
   	   </div>
 	   </td>
-
+           <td nowrap="nowrap" align="center"><img src="/static/images/settings.png" style="cursor:pointer" title="Settings"> &nbsp; <img src="/static/images/delete.png" style="cursor:pointer" title="Delete"></td>
 
 
 	 <tr>

@@ -1,0 +1,3 @@
+instance_name: "Test MV"
+instance_type: "t2.micro"
+ami_id: "ami-08bac620dc84221eb"
