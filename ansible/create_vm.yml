@@ -1,0 +1,14 @@
+---
+- name: Create EC2 instances
+  vars_files: create_vm_vars.yml
+  hosts: localhost
+  tasks:
+  - ec2:
+      region: eu-west-1
+      instance_type: "{{ instance_type }}"
+      image: "{{ ami_id }}"
+      wait: yes
+      instance_tags:
+        Name: "{{ instance_name }}" 
+      vpc_subnet_id: subnet-059f84f89ee2ff880
+      assign_public_ip: yes

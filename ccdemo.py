@@ -5,6 +5,7 @@ from botocore.exceptions import ClientError
 from subprocess import call
 from flaskext.mysql import MySQL
 
+import ansible_runner
 
 app = flask.Flask(__name__)
 
@@ -84,6 +85,38 @@ def users():
 def inventory():
    return render_template('inventory.html')
 
+@app.route('/create_vm')
+def create_vm():
+   return render_template('create_vm.html')
+
+
+
+@app.route('/create_vm_exec',methods=['POST'])
+def create_vm_exec():
+    instance_name=request.form.get('instance_name')
+    os_image=request.form.get('lst_os_image')
+    instance_type=request.form.get('lst_instance_type')
+  
+    import os
+    curpath = os.path.abspath(os.curdir)
+
+    f = open("ansible/create_vm_vars.yml", "w")
+    f.write("instance_name: \"" + instance_name + "\"\n")
+    f.write("instance_type: \"" + instance_type + "\"\n")
+    f.write("ami_id: \"" + os_image + "\"\n")
+    f.close()
+
+    r = ansible_runner.run(playbook='/home/ccdemo/ccdemo/ansible/create_vm.yml')
+
+    ec2 = boto3.resource('ec2', region_name='eu-west-1')
+
+    filters = [{ 'Name': 'instance-state-name', 'Values': ['running','stopped','pending', 'shutting-down','terminated','stopping']}]
+    instances=ec2.instances.filter(Filters=filters)
+
+    return render_template('vms.html', instances=instances);
+
+
+
 
 @app.route('/show_inventory/<inventory_type>')
 def show_inventory(inventory_type):
@@ -108,6 +141,7 @@ def show_inventory(inventory_type):
           <th align="center" nowrap="nowrap">CPU</th>
           <th align="center" nowrap="nowrap">RAM</th>
           <th align="center" nowrap="nowrap">Storage</th>
+          <th align="center" nowrap="nowrap"></th>
         </tr>
        </thead>
        <tbody>'''
@@ -121,6 +155,7 @@ def show_inventory(inventory_type):
           <td nowrap="nowrap">{}</td>
           <td nowrap="nowrap">{}</td>
           <td nowrap="nowrap">{}</td>
+          <td nowrap="nowrap" align="center"><img src="/static/images/settings.png" style="cursor:pointer" title="Settings"> &nbsp; <img src="/static/images/delete.png" style="cursor:pointer" title="Delete"></td>
          </tr>'''.format(record[0], record[1], record[2], record[3], record[4])
 
         result = header + rows + '</tbody></table>'
@@ -140,6 +175,7 @@ def show_inventory(inventory_type):
           <th nowrap="nowrap">ISO Image name</th>
           <th align="center" nowrap="nowrap">OS type</th>
           <th align="center" nowrap="nowrap">ISO file</th>
+          <th align="center" nowrap="nowrap"></th>
         </tr>
        </thead>
        <tbody>'''
@@ -151,6 +187,7 @@ def show_inventory(inventory_type):
           <td nowrap="nowrap" >{}</td>
           <td nowrap="nowrap" >{}</td>
           <td nowrap="nowrap">{}</td>
+          <td nowrap="nowrap" align="center"><img src="/static/images/settings.png" style="cursor:pointer" title="Settings"> &nbsp; <img src="/static/images/delete.png" style="cursor:pointer" title="Delete"></td>
          </tr>'''.format(record[0], record[1], record[2])
 
         result = header + rows + '</tbody></table>'
@@ -171,6 +208,7 @@ def show_inventory(inventory_type):
           <th align="center" nowrap="nowrap">OS type</th>
           <th align="center" nowrap="nowrap">Installation file</th>
           <th align="center" nowrap="nowrap">Notes</th>
+          <th align="center" nowrap="nowrap"></th>
         </tr>
        </thead>
        <tbody>'''
@@ -183,6 +221,7 @@ def show_inventory(inventory_type):
           <td nowrap="nowrap" >{}</td>
           <td nowrap="nowrap">{}</td>
           <td nowrap="nowrap">{}</td>
+          <td nowrap="nowrap" align="center"><img src="/static/images/settings.png" style="cursor:pointer" title="Settings"> &nbsp; <img src="/static/images/delete.png" style="cursor:pointer" title="Delete"></td>
          </tr>'''.format(record[0], record[1], record[2], record[3])
 
         result = header + rows + '</tbody></table>'
@@ -202,6 +241,7 @@ def show_inventory(inventory_type):
           <th nowrap="nowrap">Playbook name</th>
           <th align="center" nowrap="nowrap">Description</th>
           <th align="center" nowrap="nowrap">Run command</th>
+          <th align="center" nowrap="nowrap"></th>
         </tr>
        </thead>
        <tbody>'''
@@ -213,6 +253,7 @@ def show_inventory(inventory_type):
           <td nowrap="nowrap">{}</td>
           <td nowrap="nowrap">{}</td>
           <td nowrap="nowrap">{}</td>
+          <td nowrap="nowrap" align="center"><img src="/static/images/settings.png" style="cursor:pointer" title="Settings"> &nbsp; <img src="/static/images/delete.png" style="cursor:pointer" title="Delete"></td>
          </tr>'''.format(record[0], record[1], record[2])
 
         result = header + rows + '</tbody></table>'
@@ -233,6 +274,7 @@ def show_inventory(inventory_type):
           <th align="center" nowrap="nowrap">Description</th>
           <th align="center" nowrap="nowrap">Cloud provider</th>
           <th align="center" nowrap="nowrap">Script file</th>
+          <th align="center" nowrap="nowrap"></th>
         </tr>
        </thead>
        <tbody>'''
@@ -245,6 +287,7 @@ def show_inventory(inventory_type):
           <td nowrap="nowrap">{}</td>
           <td nowrap="nowrap">{}</td>
           <td nowrap="nowrap">{}</td>
+          <td nowrap="nowrap" align="center"><img src="/static/images/settings.png" style="cursor:pointer" title="Settings"> &nbsp; <img src="/static/images/delete.png" style="cursor:pointer" title="Delete"></td>
          </tr>'''.format(record[0], record[1], record[2], record[3])
 
         result = header + rows + '</tbody></table>'
@@ -263,6 +306,7 @@ def show_inventory(inventory_type):
           <th align="center" nowrap="nowrap">Script name</th>
           <th align="center" nowrap="nowrap">Description</th>
           <th align="center" nowrap="nowrap">Script command</th>
+          <th align="center" nowrap="nowrap"></th>
         </tr>
        </thead>
        <tbody>'''
@@ -274,6 +318,7 @@ def show_inventory(inventory_type):
           <td nowrap="nowrap">{}</td>
           <td nowrap="nowrap">{}</td>
           <td nowrap="nowrap">{}</td>
+          <td nowrap="nowrap" align="center"><img src="/static/images/settings.png" style="cursor:pointer" title="Settings"> &nbsp; <img src="/static/images/delete.png" style="cursor:pointer" title="Delete"></td>
          </tr>'''.format(record[0], record[1], record[2])
 
         result = header + rows + '</tbody></table>'
@@ -296,6 +341,7 @@ def show_inventory(inventory_type):
          <tr>
           <th align="center" nowrap="nowrap">Image name</th>
           <th align="center" nowrap="nowrap">Description</th>
+          <th align="center" nowrap="nowrap"></th>
         </tr>
        </thead>
        <tbody>'''
@@ -306,6 +352,7 @@ def show_inventory(inventory_type):
          rows = rows + ''' <tr>
           <td nowrap="nowrap">{}</td>
           <td nowrap="nowrap">{}</td>
+          <td nowrap="nowrap" align="center"><img src="/static/images/settings.png" style="cursor:pointer" title="Settings"> &nbsp; <img src="/static/images/delete.png" style="cursor:pointer" title="Delete"></td>
          </tr>'''.format(record[0], record[1])
 
         result = header + rows + '</tbody></table>'
